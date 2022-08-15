@@ -1,0 +1,79 @@
+server:
+  port: 7008
+  dateFormat: yyyy-MM-dd HH:mm:ss
+logging:
+  level:
+    com.inhe.tp.service: debug
+  file.name: logs/${spring.application.name}.log
+mybatis:
+  type-aliases-package: com.inhe.model
+  #mapper-locations: classpath:com/inhe/mapper/*.xml,classpath:com/inhe/tp/mapper/*.xml
+  mapper-locations: classpath:com/inhe/mapper_oracle/*.xml,classpath:com/inhe/tp/mapper_oracle/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+spring:
+  aop:
+    auto: true 
+  application:
+    name: inhe-ami-tp
+  datasource:
+    #url: jdbc:mysql://192.168.2.97:3306/smartami?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    #username: root
+    #password: Svr@2010
+    #driver-class-name: com.mysql.jdbc.Driver
+    #url: jdbc:oracle:thin:@192.168.2.238:1521:orcl
+    url: jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.2.238)(PORT = 1521))(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = orclpdb)))
+    username: addtest1
+    password: test123
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    type: com.alibaba.druid.pool.DruidDataSource
+    filters: stat,wall
+    dbcp2:
+      min-idle: 5                         #数据库连接池最小维持连接数
+      initial-size: 5                     #初始化
+      max-total: 30                       #最大连接数
+      max-wait-millis: 200                #等待链接获取的最大超时时间
+  jackson:
+    date-format: ${server.dateFormat}
+    time-zone: GMT+8
+  mvc:
+    date-format: ${server.dateFormat}
+    white-list: /api/client/*,/api/real/rest/*,/api/dev-com/*,/api/test/*,
+  devtools:
+    restart:
+      enabled: false
+  redis:
+    database: 0  
+    host: 192.168.2.245
+    port: 6379
+    timeout: 10000
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    leaseRenewalIntervalInSeconds: 5      #心跳间隔，5秒
+    leaseExpirationDurationInSeconds: 10  #没有心跳的淘汰时间，10秒
+  client:
+    service-url:
+      defaultZone: http://192.168.2.245:6001/eureka
+    register-with-eureka: true
+    registryFetchIntervalSeconds: 5       #定时刷新本地缓存时间 
+ribbon:
+  ServerListRefreshInterval: 2000         #ribbon缓存时间
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: true
+  restart:
+    enabled: true
+management:
+  security:
+    enabled: false
+rocketmq:
+  namesrvUrl: 192.168.2.245:9876
+  producer:
+    maxSize: 131072
+    timeout: 10000
+    retimes: 3
+amiurl: http://192.168.2.245:8888/general/unified/unified_soap.php?wsdl
+oucurl: http://127.0.0.1:7001/ouc/mdm/getdata
